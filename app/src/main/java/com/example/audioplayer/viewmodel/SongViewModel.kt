@@ -3,16 +3,17 @@ package com.example.audioplayer.viewmodel
 import androidx.lifecycle.ViewModel
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
-import com.example.audioplayer.repositoryimpl.FakeSongRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class SongViewModel: ViewModel() {
+@HiltViewModel
+class SongViewModel @Inject constructor(
+    private val songRepository: SongRepositoryInterface
+): ViewModel() {
     companion object{
         const val TAG = "SongViewModel"
     }
 
-    private val songRepository: SongRepositoryInterface by lazy {
-        FakeSongRepositoryImpl()
-    }
 
     fun getSongList(): List<Song>{
         return songRepository.getSongsList()
