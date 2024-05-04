@@ -1,7 +1,10 @@
 package com.example.audioplayer.di
 
+import android.app.Application
+import android.content.Context
 import com.example.audioplayer.repository.SongRepositoryInterface
 import com.example.audioplayer.repositoryimpl.FakeSongRepositoryImpl
+import com.example.audioplayer.repositoryimpl.SongRepositoryImpl
 import com.example.audioplayer.viewmodel.SongViewModel
 import dagger.Module
 import dagger.Provides
@@ -15,8 +18,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesSongRepository(): SongRepositoryInterface{
-        return FakeSongRepositoryImpl()
+    fun providesSongRepository(context: Application): SongRepositoryInterface{
+        return SongRepositoryImpl(context)
     }
 
     @Provides

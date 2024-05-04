@@ -1,12 +1,22 @@
 package com.example.audioplayer.view
 
+import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.audioplayer.databinding.ActivityMainBinding
 import com.example.audioplayer.extra.IntentString
@@ -24,6 +34,7 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener {
 
     private val viewModel: SongViewModel by viewModels()
 
+    val REQUEST_PERMISSION_CODE = 1
     private val songAdapter: SongAdapter by lazy {
         SongAdapter(viewModel.getSongList(), this)
     }
@@ -40,7 +51,12 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         supportActionBar?.title = "Songs List"
-        setupSongsList()
+        if(checkStoragePermissions()){
+            setupSongsList()
+        }
+        else {
+            requestPermissions()
+        }
     }
 
     private fun setupSongsList() {
@@ -61,4 +77,36 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener {
     override fun onItemClick(song: Song) {
         startPlayActivity(song)
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
+                setupSongsList()
+            }
+            else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    fun checkStoragePermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //Android is 11 (R) or above
+            Environment.isExternalStorageManager()
+        } else {
+            //Below android 11
+            val read =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            read == PackageManager.PERMISSION_GRANTED
+        }
+    }
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf<String>(READ_EXTERNAL_STORAGE),
+            REQUEST_PERMISSION_CODE
+        )
+    }
+
 }
