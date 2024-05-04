@@ -7,20 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        app:title="Songs"
-        android:layout_height="wrap_content"
-        android:background="@color/cardview_dark_background"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycle_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/song_item_view"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

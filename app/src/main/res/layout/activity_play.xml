@@ -3,19 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="@color/black"
+    tools:background="@color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.PlayActivity">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:title="Playing"
-        />
 
     <ImageView
         android:id="@+id/image_view"
@@ -23,7 +14,7 @@
         android:layout_height="@dimen/image_view_size"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/baseline_image_24"
         android:layout_marginTop="@dimen/image_view_margin_top"
         />
@@ -53,6 +44,7 @@
         />
 
     <SeekBar
+        android:id="@+id/seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,6 +52,26 @@
         android:layout_marginHorizontal="@dimen/seek_bar_margin"
         android:layout_marginBottom="@dimen/seek_bar_margin"
         />
+
+    <TextView
+        android:id="@+id/current_time_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seekbar"
+        android:layout_marginHorizontal="@dimen/seek_bar_margin"
+        android:layout_marginBottom="@dimen/seek_bar_margin"
+        android:text="00:00"/>
+
+    <TextView
+        android:id="@+id/duration_time_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seekbar"
+        android:layout_marginHorizontal="@dimen/seek_bar_margin"
+        android:layout_marginBottom="@dimen/seek_bar_margin"
+        android:text="3:54"/>
 
     <LinearLayout
         android:id="@+id/linear_layout"

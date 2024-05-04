@@ -6,7 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.audioplayer.databinding.SongItemViewBinding
 import com.example.audioplayer.model.Song
 
-class SongAdapter(private val songList: List<Song>): RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+
+class SongAdapter(
+    private val songList: List<Song>,
+    private val listener: OnSongItemClickListener
+): RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val itemBinding = SongItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,14 +23,18 @@ class SongAdapter(private val songList: List<Song>): RecyclerView.Adapter<SongAd
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song: Song = songList[position]
-        holder.bind(song)
+        holder.bind(song, listener)
     }
 
     inner class SongViewHolder(private val item: SongItemViewBinding): RecyclerView.ViewHolder(item.root){
-        fun bind (song: Song){
+        fun bind (song: Song, listener: OnSongItemClickListener){
             item.songInfoTextview.text = song.info
             item.songNameTextview.text = song.name
             item.songDurationTextview.text = song.duration
+
+            itemView.setOnClickListener {
+                listener.onItemClick(song)
+            }
         }
     }
 }

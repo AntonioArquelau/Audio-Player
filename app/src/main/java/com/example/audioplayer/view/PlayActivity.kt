@@ -1,12 +1,14 @@
 package com.example.audioplayer.view
 
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.audioplayer.R
 import com.example.audioplayer.databinding.ActivityPlayBinding
+import com.example.audioplayer.extra.IntentString
+
 
 class PlayActivity : AppCompatActivity() {
 
@@ -18,10 +20,40 @@ class PlayActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        val songName = intent.getStringExtra(IntentString.INTENT_SONG_NAME)
+        val songInfo = intent.getStringExtra(IntentString.INTENT_SONG_INFO)
+        val songDuration = intent.getStringExtra(IntentString.INTENT_SONG_DURATION)
+
+        //This will be used to load and play the song on the comimg commits.
+        val songPath = intent.getStringExtra(IntentString.INTENT_SONG_PATH)
+
+        binding.songInfoTextview.text = songInfo
+        binding.songNameTextview.text = songName
+        binding.durationTimeTextView.text = songDuration
+
+        setupToolbar()
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                setResult(RESULT_OK)
+                finish()
+            }
+        })
+    }
+
+    private fun setupToolbar(){
+        supportActionBar?.title = "Playing"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+            }
+            else ->
+            {}
         }
+        return super.onOptionsItemSelected(item)
     }
 }
