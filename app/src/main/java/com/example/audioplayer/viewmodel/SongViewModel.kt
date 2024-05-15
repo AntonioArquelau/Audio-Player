@@ -33,4 +33,12 @@ class SongViewModel @Inject constructor(
     fun isPlaying(): Boolean{
         return songRepository.isPlaying()
     }
+
+    fun next() : Song{
+        return songRepository.next()
+    }
+
+    fun prev() : Song{
+        return songRepository.previous()
+    }
 }

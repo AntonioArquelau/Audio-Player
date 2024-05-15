@@ -47,11 +47,11 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
         TODO("Not yet implemented")
     }
 
-    override fun next() {
+    override fun next(): Song {
         TODO("Not yet implemented")
     }
 
-    override fun previous() {
+    override fun previous(): Song {
         TODO("Not yet implemented")
     }
 

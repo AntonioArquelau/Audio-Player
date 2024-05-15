@@ -10,7 +10,7 @@ interface SongRepositoryInterface {
     fun pause()
     fun random(enable: Boolean)
     fun repeat(enable: Boolean)
-    fun next()
-    fun previous()
+    fun next(): Song
+    fun previous(): Song
     fun isPlaying(): Boolean
 }

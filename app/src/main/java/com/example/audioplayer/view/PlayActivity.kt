@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.audioplayer.R
 import com.example.audioplayer.databinding.ActivityPlayBinding
 import com.example.audioplayer.extra.IntentString
+import com.example.audioplayer.model.Song
 import com.example.audioplayer.viewmodel.SongViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,12 +33,9 @@ class PlayActivity (): AppCompatActivity() {
 
         //This will be used to load and play the song on the comimg commits.
         val songPosition = intent.getIntExtra(IntentString.INTENT_SONG_POSITION, 0)
+        val song = Song(songName, songInfo, songDuration, null)
+        updateUI(song)
 
-        binding.songInfoTextview.text = songInfo
-        binding.songNameTextview.text = songName
-        binding.durationTimeTextView.text = songDuration
-
-        binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
         songPosition.let {
             viewModel.createService(it, intent)
         }
@@ -59,8 +57,23 @@ class PlayActivity (): AppCompatActivity() {
                 binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
             }
         }
+
+        binding.nextButton.setOnClickListener{
+           val song = viewModel.next()
+            updateUI(song)
+        }
+        binding.prevButton.setOnClickListener{
+           val song = viewModel.prev()
+            updateUI(song)
+        }
     }
 
+    private fun updateUI(song: Song){
+        binding.songInfoTextview.text = song.info
+        binding.songNameTextview.text = song.name
+        binding.durationTimeTextView.text = song.duration
+        binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
+    }
     private fun setupToolbar(){
         supportActionBar?.title = "Playing"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

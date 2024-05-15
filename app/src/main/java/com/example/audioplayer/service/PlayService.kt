@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import androidx.core.net.toUri
 import com.example.audioplayer.extra.IntentString.Companion.INTENT_SONG_POSITION
 import com.example.audioplayer.model.Song
@@ -33,7 +34,7 @@ class PlayService: Service() {
         songsList = songs.toMutableList()
         mediaPlayer?.stop()
         mediaPlayer?.release()
-        val uri = position.let { songsList[it].path.toUri() }
+        val uri = position.let { songsList[it].path?.toUri() }
         if( mediaPlayer == null) mediaPlayer = MediaPlayer()
         mediaPlayer?.setDataSource(uri.toString())
         mediaPlayer?.prepare()
@@ -56,23 +57,13 @@ class PlayService: Service() {
         TODO("Not yet implemented")
     }
 
-    fun next() {
+    fun play(position: Int) {
         mediaPlayer?.stop()
-        mediaPlayer?.release()
-        //val nextPosition = if(songRepository.getListSize() > position) position+1 else return
-       // val uri = songRepository.getSong(nextPosition).path.toUri()
-       // mediaPlayer = MediaPlayer.create(applicationContext, uri)
+        mediaPlayer?.reset()
+        val uri = position.let { songsList[it].path?.toUri() }
+        mediaPlayer?.setDataSource(uri.toString())
         mediaPlayer?.prepare()
         play()
     }
 
-    fun previous() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        //val nextPosition = if(position > 0) position-1 else return
-      //  val uri = songRepository.getSong(nextPosition).path.toUri()
-      //  mediaPlayer = MediaPlayer.create(applicationContext, uri)
-        mediaPlayer?.prepare()
-        play()
-    }
 }

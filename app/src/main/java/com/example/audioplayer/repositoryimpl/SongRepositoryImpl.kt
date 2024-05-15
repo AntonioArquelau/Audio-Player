@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
 import com.example.audioplayer.service.PlayService
@@ -63,12 +64,30 @@ class SongRepositoryImpl @Inject constructor (
         TODO("Not yet implemented")
     }
 
-    override fun next() {
-        TODO("Not yet implemented")
+    override fun next(): Song {
+        if (position + 1 >= songsList.size)
+        {
+            position = 0
+        }
+        else{
+            position += 1
+        }
+        playService?.play(position)
+
+        return songsList[position]
     }
 
-    override fun previous() {
-        TODO("Not yet implemented")
+    override fun previous(): Song {
+        if (position - 1 < 0)
+        {
+            position = songsList.size - 1
+        }
+        else{
+            position -= 1
+        }
+        playService?.play(position)
+
+        return songsList[position]
     }
 
     override fun isPlaying(): Boolean {
