@@ -23,17 +23,17 @@ class SongAdapter(
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song: Song = songList[position]
-        holder.bind(song, listener)
+        holder.bind(song, listener, position)
     }
 
     inner class SongViewHolder(private val item: SongItemViewBinding): RecyclerView.ViewHolder(item.root){
-        fun bind (song: Song, listener: OnSongItemClickListener){
+        fun bind (song: Song, listener: OnSongItemClickListener, position: Int){
             item.songInfoTextview.text = song.info
             item.songNameTextview.text = song.name
             item.songDurationTextview.text = song.duration
 
             itemView.setOnClickListener {
-                listener.onItemClick(song)
+                listener.onItemClick(song, position)
             }
         }
     }

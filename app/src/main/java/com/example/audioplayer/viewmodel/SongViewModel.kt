@@ -1,5 +1,6 @@
 package com.example.audioplayer.viewmodel
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
@@ -14,32 +15,11 @@ class SongViewModel @Inject constructor(
         const val TAG = "SongViewModel"
     }
 
-
     fun getSongList(): List<Song>{
         return songRepository.getSongsList()
     }
 
-    fun playSong() {
-        songRepository.play()
-    }
-
-    fun pauseSong(){
-        songRepository.pause()
-    }
-
-    fun repeatSong(enable: Boolean){
-        songRepository.repeat(enable)
-    }
-
-    fun randomSong(enable: Boolean){
-        songRepository.random(enable)
-    }
-
-    fun nextSong(){
-        songRepository.next()
-    }
-
-    fun previousSong(){
-        songRepository.previous()
+    fun createService(position: Int, intent: Intent){
+        songRepository.createService(position, intent)
     }
 }

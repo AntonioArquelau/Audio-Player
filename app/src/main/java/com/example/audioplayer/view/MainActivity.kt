@@ -5,8 +5,6 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.LocationManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -65,17 +63,18 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener {
         binding.recycleView.adapter = songAdapter
     }
 
-    private fun startPlayActivity(song: Song){
+    private fun startPlayActivity(song: Song, id: Int){
         val intent = Intent(this, PlayActivity::class.java);
         intent.putExtra(IntentString.INTENT_SONG_NAME, song.name)
         intent.putExtra(IntentString.INTENT_SONG_INFO, song.info)
         intent.putExtra(IntentString.INTENT_SONG_DURATION, song.duration)
         intent.putExtra(IntentString.INTENT_SONG_PATH, song.path)
+        intent.putExtra(IntentString.INTENT_SONG_POSITION, id)
         startForResult.launch(intent)
     }
 
-    override fun onItemClick(song: Song) {
-        startPlayActivity(song)
+    override fun onItemClick(song: Song, id: Int) {
+        startPlayActivity(song, id)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

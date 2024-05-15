@@ -1,5 +1,6 @@
 package com.example.audioplayer.repositoryimpl
 
+import android.content.Intent
 import android.util.Log
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
@@ -26,27 +27,31 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
         return songsList
     }
 
+    override fun createService(position: Int, intent: Intent) {
+        TODO("Not yet implemented")
+    }
+
     override fun play() {
-        Log.i(TAG, "Play Song")
+        TODO("Not yet implemented")
     }
 
     override fun pause() {
-        Log.i(TAG, "Pause Song")
+        TODO("Not yet implemented")
     }
 
     override fun random(enable: Boolean) {
-        Log.i(TAG, "Enable Random Song $enable")
+        TODO("Not yet implemented")
     }
 
     override fun repeat(enable: Boolean) {
-        Log.i(TAG, "Enable Repeat $enable")
+        TODO("Not yet implemented")
     }
 
     override fun next() {
-        Log.i(TAG, "Skip Song")
+        TODO("Not yet implemented")
     }
 
     override fun previous() {
-        Log.i(TAG, "Turn Song Back")
+        TODO("Not yet implemented")
     }
 }
