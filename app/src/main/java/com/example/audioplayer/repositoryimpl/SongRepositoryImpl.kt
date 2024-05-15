@@ -71,6 +71,10 @@ class SongRepositoryImpl @Inject constructor (
         TODO("Not yet implemented")
     }
 
+    override fun isPlaying(): Boolean {
+        return playService?.mediaPlayer?.isPlaying == true
+    }
+
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val binder = service as PlayService.MyBinder
         playService = binder.service

@@ -22,4 +22,15 @@ class SongViewModel @Inject constructor(
     fun createService(position: Int, intent: Intent){
         songRepository.createService(position, intent)
     }
+
+    fun play(){
+        songRepository.play()
+    }
+     fun pause(){
+         songRepository.pause()
+     }
+
+    fun isPlaying(): Boolean{
+        return songRepository.isPlaying()
+    }
 }

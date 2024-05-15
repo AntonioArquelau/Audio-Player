@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.audioplayer.R
 import com.example.audioplayer.databinding.ActivityPlayBinding
 import com.example.audioplayer.extra.IntentString
 import com.example.audioplayer.viewmodel.SongViewModel
@@ -36,6 +37,7 @@ class PlayActivity (): AppCompatActivity() {
         binding.songNameTextview.text = songName
         binding.durationTimeTextView.text = songDuration
 
+        binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
         songPosition.let {
             viewModel.createService(it, intent)
         }
@@ -47,6 +49,16 @@ class PlayActivity (): AppCompatActivity() {
             }
         })
 
+        binding.playPauseButton.setOnClickListener{
+            if (viewModel.isPlaying()){
+                viewModel.pause()
+                binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_play_arrow_24, theme)
+            }
+            else{
+                viewModel.play()
+                binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
+            }
+        }
     }
 
     private fun setupToolbar(){

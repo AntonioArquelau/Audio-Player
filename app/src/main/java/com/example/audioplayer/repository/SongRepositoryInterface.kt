@@ -12,4 +12,5 @@ interface SongRepositoryInterface {
     fun repeat(enable: Boolean)
     fun next()
     fun previous()
+    fun isPlaying(): Boolean
 }

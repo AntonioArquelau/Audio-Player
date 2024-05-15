@@ -54,4 +54,8 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
     override fun previous() {
         TODO("Not yet implemented")
     }
+
+    override fun isPlaying(): Boolean {
+        TODO("Not yet implemented")
+    }
 }
