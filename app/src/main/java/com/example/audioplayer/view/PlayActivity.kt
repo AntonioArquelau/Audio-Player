@@ -12,9 +12,16 @@ import com.example.audioplayer.extra.IntentString
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.viewmodel.SongViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.String
+import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class PlayActivity (): AppCompatActivity() {
+
+    companion object{
+        val formatter = SimpleDateFormat("mm:ss")
+    }
 
     private val binding: ActivityPlayBinding by lazy {
         ActivityPlayBinding.inflate(layoutInflater)
@@ -80,9 +87,25 @@ class PlayActivity (): AppCompatActivity() {
     private fun updateUI(song: Song){
         binding.songInfoTextview.text = song.info
         binding.songNameTextview.text = song.name
-        binding.durationTimeTextView.text = song.duration
+
+        val songDuration: Long = song.duration?.toLong()!!
+        val hms = String.format(
+            "%02d:%02d",
+            TimeUnit.MILLISECONDS.toMinutes(songDuration) - TimeUnit.HOURS.toMinutes(
+                TimeUnit.MILLISECONDS.toHours(
+                    songDuration
+                )
+            ),
+            TimeUnit.MILLISECONDS.toSeconds(songDuration) - TimeUnit.MINUTES.toSeconds(
+                TimeUnit.MILLISECONDS.toMinutes(
+                    songDuration
+                )
+            )
+        )
+        binding.durationTimeTextView.text = hms
         binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
     }
+
     
     private fun setupToolbar(){
         supportActionBar?.title = "Playing"
