@@ -1,6 +1,7 @@
 package com.example.audioplayer.viewmodel
 
 import android.content.Intent
+import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
@@ -48,5 +49,9 @@ class SongViewModel @Inject constructor(
 
     fun toggleRandom(enabled: Boolean){
         return songRepository.random(enabled)
+    }
+
+    fun getMediaPlayer(): MediaPlayer? {
+        return songRepository.getMediaPlayer()
     }
 }

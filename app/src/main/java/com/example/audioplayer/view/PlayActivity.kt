@@ -1,7 +1,11 @@
 package com.example.audioplayer.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.MenuItem
+import android.widget.SeekBar
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -13,14 +17,13 @@ import com.example.audioplayer.model.Song
 import com.example.audioplayer.viewmodel.SongViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.String
-import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class PlayActivity (): AppCompatActivity() {
 
     companion object{
-        val formatter = SimpleDateFormat("mm:ss")
+        const val FORMATTER = "%02d:%02d"
     }
 
     private val binding: ActivityPlayBinding by lazy {
@@ -28,6 +31,7 @@ class PlayActivity (): AppCompatActivity() {
     }
 
     private val viewModel: SongViewModel by viewModels()
+    private var isSeeking = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +46,7 @@ class PlayActivity (): AppCompatActivity() {
         val songPosition = intent.getIntExtra(IntentString.INTENT_SONG_POSITION, 0)
         val song = Song(songName, songInfo, songDuration, null)
         updateUI(song)
+
 
         songPosition.let {
             viewModel.createService(it, intent)
@@ -84,13 +89,21 @@ class PlayActivity (): AppCompatActivity() {
         }
     }
 
+    @SuppressLint("DefaultLocale", "UseCompatLoadingForDrawables")
     private fun updateUI(song: Song){
         binding.songInfoTextview.text = song.info
         binding.songNameTextview.text = song.name
 
         val songDuration: Long = song.duration?.toLong()!!
-        val hms = String.format(
-            "%02d:%02d",
+        val hms =formatString(songDuration)
+        binding.durationTimeTextView.text = hms
+        binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
+        setupSeekBar(songDuration)
+    }
+
+    fun formatString(songDuration: Long): kotlin.String{
+        return String.format(
+            FORMATTER,
             TimeUnit.MILLISECONDS.toMinutes(songDuration) - TimeUnit.HOURS.toMinutes(
                 TimeUnit.MILLISECONDS.toHours(
                     songDuration
@@ -102,8 +115,41 @@ class PlayActivity (): AppCompatActivity() {
                 )
             )
         )
-        binding.durationTimeTextView.text = hms
-        binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
+    }
+    fun setupSeekBar(duration: Long){
+        binding.seekbar.max = duration.toInt()
+        val mHandler = Handler()
+        this.runOnUiThread(object : Runnable {
+            override fun run() {
+                if(!isSeeking) {
+                    if (viewModel.getMediaPlayer() != null) {
+                        val mCurrentPosition: Int = viewModel.getMediaPlayer()!!.currentPosition
+                        binding.seekbar.setProgress(mCurrentPosition)
+                        binding.currentTimeTextView.text = formatString(mCurrentPosition.toLong())
+                    }
+                }
+                mHandler.postDelayed(this, 100)
+
+            }
+        })
+
+        binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if(isSeeking) {
+                    viewModel.getMediaPlayer()?.seekTo(progress)
+                    binding.currentTimeTextView.text = formatString(progress.toLong())
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isSeeking = true
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                isSeeking = false
+            }
+
+        })
     }
 
     

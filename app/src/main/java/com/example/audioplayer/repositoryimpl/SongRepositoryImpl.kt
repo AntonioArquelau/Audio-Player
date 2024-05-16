@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
+import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
 import androidx.core.net.toUri
@@ -95,6 +96,10 @@ class SongRepositoryImpl @Inject constructor (
 
     override fun isPlaying(): Boolean {
         return playService?.mediaPlayer?.isPlaying == true
+    }
+
+    override fun getMediaPlayer(): MediaPlayer? {
+        return playService?.mediaPlayer
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

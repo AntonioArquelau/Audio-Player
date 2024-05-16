@@ -1,6 +1,7 @@
 package com.example.audioplayer.repository
 
 import android.content.Intent
+import android.media.MediaPlayer
 import com.example.audioplayer.model.Song
 
 interface SongRepositoryInterface {
@@ -13,4 +14,5 @@ interface SongRepositoryInterface {
     fun next(): Song
     fun previous(): Song
     fun isPlaying(): Boolean
+    fun getMediaPlayer(): MediaPlayer?
 }

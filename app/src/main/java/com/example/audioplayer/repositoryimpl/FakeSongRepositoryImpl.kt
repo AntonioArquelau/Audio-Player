@@ -1,6 +1,7 @@
 package com.example.audioplayer.repositoryimpl
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.util.Log
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
@@ -57,6 +58,10 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
     }
 
     override fun isPlaying(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMediaPlayer(): MediaPlayer? {
         TODO("Not yet implemented")
     }
 }
