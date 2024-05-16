@@ -39,11 +39,12 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
         TODO("Not yet implemented")
     }
 
-    override fun random(enable: Boolean) {
+    override fun random(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
-    override fun repeat(enable: Boolean) {
+
+    override fun repeat(): Boolean {
         TODO("Not yet implemented")
     }
 

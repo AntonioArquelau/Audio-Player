@@ -66,6 +66,15 @@ class PlayActivity (): AppCompatActivity() {
            val song = viewModel.prev()
             updateUI(song)
         }
+
+        binding.repeatToggleButton.setOnClickListener{
+            binding.repeatToggleButton.isActivated = viewModel.toggleRepeat()
+        }
+
+        binding.randomToggleButton.setOnClickListener{
+            binding.randomToggleButton.isActivated =  !binding.randomToggleButton.isActivated
+            viewModel.toggleRandom(binding.randomToggleButton.isActivated)
+        }
     }
 
     private fun updateUI(song: Song){
@@ -74,6 +83,7 @@ class PlayActivity (): AppCompatActivity() {
         binding.durationTimeTextView.text = song.duration
         binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
     }
+    
     private fun setupToolbar(){
         supportActionBar?.title = "Playing"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

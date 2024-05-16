@@ -8,8 +8,8 @@ interface SongRepositoryInterface {
     fun createService(position: Int, intent: Intent)
     fun play()
     fun pause()
-    fun random(enable: Boolean)
-    fun repeat(enable: Boolean)
+    fun random(enabled: Boolean)
+    fun repeat(): Boolean
     fun next(): Song
     fun previous(): Song
     fun isPlaying(): Boolean

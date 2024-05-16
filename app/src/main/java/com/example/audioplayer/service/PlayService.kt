@@ -15,6 +15,8 @@ class PlayService: Service() {
     private val mBinder = MyBinder()
     var mediaPlayer: MediaPlayer? = null
     private var songsList = mutableListOf<Song>()
+    private var currentPosition = 0
+    var enableRandom = false
     override fun onBind(intent: Intent?): IBinder? {
         return mBinder
     }
@@ -43,18 +45,29 @@ class PlayService: Service() {
 
     fun play() {
         mediaPlayer?.start()
+
+        mediaPlayer?.setOnCompletionListener {
+            if(enableRandom){
+                currentPosition = (Math.random() * (songsList.size - 1)).toInt()
+                play(currentPosition)
+            }
+            else {
+                play(currentPosition + 1)
+            }
+        }
     }
 
     fun pause() {
         mediaPlayer?.pause()
     }
 
-    fun random(enable: Boolean) {
-        TODO("Not yet implemented")
+    fun random(enabled: Boolean) {
+        enableRandom = enabled
     }
 
-    fun repeat(enable: Boolean) {
-        TODO("Not yet implemented")
+    fun repeat(): Boolean {
+        mediaPlayer?.isLooping = !mediaPlayer?.isLooping!!
+        return mediaPlayer?.isLooping == true
     }
 
     fun play(position: Int) {
@@ -63,6 +76,7 @@ class PlayService: Service() {
         val uri = position.let { songsList[it].path?.toUri() }
         mediaPlayer?.setDataSource(uri.toString())
         mediaPlayer?.prepare()
+        currentPosition = position
         play()
     }
 

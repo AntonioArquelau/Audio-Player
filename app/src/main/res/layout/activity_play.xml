@@ -83,7 +83,8 @@
         android:layout_marginBottom="@dimen/linear_layout_margin"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.google.android.material.button.MaterialButton
+        <ToggleButton
+            android:id="@+id/random_toggle_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="@dimen/linear_layout_button_weight"
@@ -151,7 +152,8 @@
             app:backgroundTint="@color/transparent"
             app:icon="@drawable/baseline_fast_forward_24"/>
 
-        <com.google.android.material.button.MaterialButton
+        <ToggleButton
+            android:id="@+id/repeat_toggle_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="@dimen/linear_layout_button_weight"

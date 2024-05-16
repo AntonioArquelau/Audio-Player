@@ -56,12 +56,12 @@ class SongRepositoryImpl @Inject constructor (
         playService?.mediaPlayer?.pause()
     }
 
-    override fun random(enable: Boolean) {
-        TODO("Not yet implemented")
+    override fun random(enabled: Boolean) {
+       playService?.random(enabled)
     }
 
-    override fun repeat(enable: Boolean) {
-        TODO("Not yet implemented")
+    override fun repeat(): Boolean {
+        return playService?.repeat() == true
     }
 
     override fun next(): Song {
@@ -71,6 +71,9 @@ class SongRepositoryImpl @Inject constructor (
         }
         else{
             position += 1
+        }
+        if (playService?.enableRandom == true){
+            position = (Math.random() * (songsList.size - 1)).toInt()
         }
         playService?.play(position)
 

@@ -41,4 +41,12 @@ class SongViewModel @Inject constructor(
     fun prev() : Song{
         return songRepository.previous()
     }
+
+    fun toggleRepeat(): Boolean{
+        return songRepository.repeat()
+    }
+
+    fun toggleRandom(enabled: Boolean){
+        return songRepository.random(enabled)
+    }
 }
