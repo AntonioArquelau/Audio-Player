@@ -83,7 +83,7 @@
         android:layout_marginBottom="@dimen/linear_layout_margin"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <ToggleButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/random_toggle_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
             app:backgroundTint="@color/transparent"
             app:icon="@drawable/baseline_fast_forward_24"/>
 
-        <ToggleButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/repeat_toggle_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

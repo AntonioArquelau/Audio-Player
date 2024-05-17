@@ -12,6 +12,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.audioplayer.R
+import com.example.audioplayer.R.color.light_gray
+import com.example.audioplayer.R.color.transparent
 import com.example.audioplayer.databinding.ActivityPlayBinding
 import com.example.audioplayer.extra.IntentString
 import com.example.audioplayer.model.Song
@@ -82,11 +84,25 @@ class PlayActivity (): AppCompatActivity() {
 
         binding.repeatToggleButton.setOnClickListener{
             binding.repeatToggleButton.isActivated = viewModel.toggleRepeat()
+            if (binding.repeatToggleButton.isActivated){
+                binding.repeatToggleButton.backgroundTintList = resources.getColorStateList(light_gray, theme)
+            }
+            else{
+                binding.repeatToggleButton.backgroundTintList = resources.getColorStateList(
+                    transparent, theme)
+            }
         }
 
         binding.randomToggleButton.setOnClickListener{
             binding.randomToggleButton.isActivated =  !binding.randomToggleButton.isActivated
             viewModel.toggleRandom(binding.randomToggleButton.isActivated)
+            if (binding.randomToggleButton.isActivated){
+                binding.randomToggleButton.backgroundTintList = resources.getColorStateList(light_gray, theme)
+            }
+            else{
+                binding.randomToggleButton.backgroundTintList = resources.getColorStateList(
+                    transparent, theme)
+            }
         }
         viewModel.setOnCreateServiceListener {
             viewModel.getMediaPlayer()?.setOnCompletionListener{
