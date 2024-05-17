@@ -45,7 +45,6 @@ class PlayService: Service() {
 
     fun play() {
         mediaPlayer?.start()
-
         mediaPlayer?.setOnCompletionListener {
             if(enableRandom){
                 currentPosition = (Math.random() * (songsList.size - 1)).toInt()

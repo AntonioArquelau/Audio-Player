@@ -64,4 +64,8 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
     override fun getMediaPlayer(): MediaPlayer? {
         TODO("Not yet implemented")
     }
+
+    override fun setCreateServiceListener(listener: () -> Unit) {
+        TODO("Not yet implemented")
+    }
 }

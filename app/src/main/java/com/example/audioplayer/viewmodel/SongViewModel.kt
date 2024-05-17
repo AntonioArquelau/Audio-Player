@@ -54,4 +54,8 @@ class SongViewModel @Inject constructor(
     fun getMediaPlayer(): MediaPlayer? {
         return songRepository.getMediaPlayer()
     }
+
+    fun setOnCreateServiceListener(listener: () -> Unit){
+        songRepository.setCreateServiceListener(listener)
+    }
 }

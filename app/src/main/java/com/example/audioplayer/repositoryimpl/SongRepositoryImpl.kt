@@ -8,7 +8,6 @@ import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
 import com.example.audioplayer.service.PlayService
@@ -21,6 +20,7 @@ class SongRepositoryImpl @Inject constructor (
     private  val songsList = mutableListOf<Song>()
     private var playService: PlayService? = null
     private var position = 0
+    private var onCreateListener: (() -> Unit?)? = null
     @SuppressLint("Range")
     override fun getSongsList(): List<Song> {
 
@@ -102,10 +102,15 @@ class SongRepositoryImpl @Inject constructor (
         return playService?.mediaPlayer
     }
 
+    override fun setCreateServiceListener(listener: () -> Unit) {
+        onCreateListener = listener
+    }
+
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val binder = service as PlayService.MyBinder
         playService = binder.service
         playService?.create(songsList, position)
+        onCreateListener?.invoke()
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {

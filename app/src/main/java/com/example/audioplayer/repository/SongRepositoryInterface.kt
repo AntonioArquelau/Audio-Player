@@ -15,4 +15,5 @@ interface SongRepositoryInterface {
     fun previous(): Song
     fun isPlaying(): Boolean
     fun getMediaPlayer(): MediaPlayer?
+    fun setCreateServiceListener(listener: () -> Unit)
 }

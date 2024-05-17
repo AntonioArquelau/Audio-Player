@@ -1,6 +1,7 @@
 package com.example.audioplayer.view
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -86,6 +87,12 @@ class PlayActivity (): AppCompatActivity() {
         binding.randomToggleButton.setOnClickListener{
             binding.randomToggleButton.isActivated =  !binding.randomToggleButton.isActivated
             viewModel.toggleRandom(binding.randomToggleButton.isActivated)
+        }
+        viewModel.setOnCreateServiceListener {
+            viewModel.getMediaPlayer()?.setOnCompletionListener{
+                val song = viewModel.next()
+                updateUI(song)
+            }
         }
     }
 
