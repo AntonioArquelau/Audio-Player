@@ -2,18 +2,24 @@ package com.example.audioplayer.service
 
 import android.app.Service
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.net.toUri
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.extra.IntentString.Companion.INTENT_SONG_POSITION
 import com.example.audioplayer.model.Song
 
 class PlayService: Service() {
 
     private val mBinder = MyBinder()
-    var mediaPlayer: MediaPlayer? = null
+    val mediaPlayer: ExoPlayer by lazy {
+        ExoPlayer.Builder(applicationContext).build().apply { playWhenReady = true }
+    }
     private var songsList = mutableListOf<Song>()
     private var currentPosition = 0
     var enableRandom = false
@@ -29,35 +35,45 @@ class PlayService: Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val position = intent?.getIntExtra(INTENT_SONG_POSITION, 0)
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(C.USAGE_MEDIA)
+            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+            .build()
+        mediaPlayer.setAudioAttributes(audioAttributes, true)
         return super.onStartCommand(intent, flags, startId)
     }
 
     fun create(songs: List<Song>, position: Int){
         songsList = songs.toMutableList()
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
         val uri = position.let { songsList[it].path?.toUri() }
-        if( mediaPlayer == null) mediaPlayer = MediaPlayer()
-        mediaPlayer?.setDataSource(uri.toString())
-        mediaPlayer?.prepare()
+        val mediaItem = uri?.let { MediaItem.fromUri(it) }
+        mediaItem?.let { mediaPlayer.setMediaItem(it) }
+        mediaPlayer.prepare()
         play()
     }
 
     fun play() {
-        mediaPlayer?.start()
-        mediaPlayer?.setOnCompletionListener {
-            if(enableRandom){
-                currentPosition = (Math.random() * (songsList.size - 1)).toInt()
-                play(currentPosition)
+        mediaPlayer.play()
+        mediaPlayer.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                when(playbackState){
+                    Player.STATE_ENDED ->{
+                        if(enableRandom){
+                            currentPosition = (Math.random() * (songsList.size - 1)).toInt()
+                            play(currentPosition)
+                        }
+                        else {
+                            play(currentPosition + 1)
+                        }
+                    }
+                }
+                super.onPlaybackStateChanged(playbackState)
             }
-            else {
-                play(currentPosition + 1)
-            }
-        }
+        })
     }
 
     fun pause() {
-        mediaPlayer?.pause()
+        mediaPlayer.pause()
     }
 
     fun random(enabled: Boolean) {
@@ -65,16 +81,21 @@ class PlayService: Service() {
     }
 
     fun repeat(): Boolean {
-        mediaPlayer?.isLooping = !mediaPlayer?.isLooping!!
-        return mediaPlayer?.isLooping == true
+        return if (mediaPlayer.repeatMode == Player.REPEAT_MODE_ALL){
+            mediaPlayer.repeatMode = Player.REPEAT_MODE_OFF
+            false
+        }else{
+            mediaPlayer.repeatMode = Player.REPEAT_MODE_ALL
+            true
+        }
     }
 
     fun play(position: Int) {
-        mediaPlayer?.stop()
-        mediaPlayer?.reset()
+        mediaPlayer.stop()
         val uri = position.let { songsList[it].path?.toUri() }
-        mediaPlayer?.setDataSource(uri.toString())
-        mediaPlayer?.prepare()
+        val mediaItem = uri?.let { MediaItem.fromUri(it) }
+        mediaItem?.let { mediaPlayer.setMediaItem(it) }
+        mediaPlayer.prepare()
         currentPosition = position
         play()
     }

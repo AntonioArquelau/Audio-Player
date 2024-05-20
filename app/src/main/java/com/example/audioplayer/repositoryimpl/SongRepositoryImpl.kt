@@ -8,6 +8,7 @@ import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
 import com.example.audioplayer.service.PlayService
@@ -50,7 +51,7 @@ class SongRepositoryImpl @Inject constructor (
     }
 
     override fun play() {
-        playService?.mediaPlayer?.start()
+        playService?.mediaPlayer?.play()
     }
 
     override fun pause() {
@@ -98,7 +99,7 @@ class SongRepositoryImpl @Inject constructor (
         return playService?.mediaPlayer?.isPlaying == true
     }
 
-    override fun getMediaPlayer(): MediaPlayer? {
+    override fun getMediaPlayer(): ExoPlayer? {
         return playService?.mediaPlayer
     }
 

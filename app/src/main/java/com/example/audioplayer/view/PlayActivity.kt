@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.Player
 import com.example.audioplayer.R
 import com.example.audioplayer.R.color.light_gray
 import com.example.audioplayer.R.color.transparent
@@ -73,6 +74,7 @@ class PlayActivity (): AppCompatActivity() {
             }
         }
 
+        binding.playerView.player = viewModel.getMediaPlayer()
         binding.nextButton.setOnClickListener{
            val song = viewModel.next()
             updateUI(song)
@@ -104,12 +106,22 @@ class PlayActivity (): AppCompatActivity() {
                     transparent, theme)
             }
         }
+
         viewModel.setOnCreateServiceListener {
-            viewModel.getMediaPlayer()?.setOnCompletionListener{
-                val song = viewModel.next()
-                updateUI(song)
-            }
+            viewModel.getMediaPlayer()?.addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    when(playbackState){
+                        Player.STATE_ENDED ->{
+                            val song = viewModel.next()
+                            updateUI(song)
+                        }
+                    }
+                    super.onPlaybackStateChanged(playbackState)
+                }
+            })
         }
+
+
     }
 
     @SuppressLint("DefaultLocale", "UseCompatLoadingForDrawables")
@@ -146,7 +158,7 @@ class PlayActivity (): AppCompatActivity() {
             override fun run() {
                 if(!isSeeking) {
                     if (viewModel.getMediaPlayer() != null) {
-                        val mCurrentPosition: Int = viewModel.getMediaPlayer()!!.currentPosition
+                        val mCurrentPosition: Int = viewModel.getMediaPlayer()!!.currentPosition.toInt()
                         binding.seekbar.setProgress(mCurrentPosition)
                         binding.currentTimeTextView.text = formatString(mCurrentPosition.toLong())
                     }
@@ -159,7 +171,7 @@ class PlayActivity (): AppCompatActivity() {
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if(isSeeking) {
-                    viewModel.getMediaPlayer()?.seekTo(progress)
+                    viewModel.getMediaPlayer()?.seekTo(progress.toLong())
                     binding.currentTimeTextView.text = formatString(progress.toLong())
                 }
             }

@@ -3,6 +3,7 @@ package com.example.audioplayer.viewmodel
 import android.content.Intent
 import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +52,7 @@ class SongViewModel @Inject constructor(
         return songRepository.random(enabled)
     }
 
-    fun getMediaPlayer(): MediaPlayer? {
+    fun getMediaPlayer(): ExoPlayer? {
         return songRepository.getMediaPlayer()
     }
 
