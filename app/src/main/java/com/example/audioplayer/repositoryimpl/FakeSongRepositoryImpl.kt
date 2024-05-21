@@ -69,4 +69,8 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
     override fun setCreateServiceListener(listener: () -> Unit) {
         TODO("Not yet implemented")
     }
+
+    override fun destroyService() {
+        TODO("Not yet implemented")
+    }
 }

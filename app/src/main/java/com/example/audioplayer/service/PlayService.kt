@@ -1,18 +1,35 @@
 package com.example.audioplayer.service
 
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
+import android.widget.ImageView
+import androidx.annotation.OptIn
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.NotificationUtil
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerNotificationManager
+import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
+import androidx.media3.ui.PlayerNotificationManager.NotificationListener
+import com.example.audioplayer.R
 import com.example.audioplayer.extra.IntentString.Companion.INTENT_SONG_POSITION
 import com.example.audioplayer.model.Song
+import com.example.audioplayer.view.MainActivity
+import java.util.Objects
 
 class PlayService: Service() {
 
@@ -22,7 +39,11 @@ class PlayService: Service() {
     }
     private var songsList = mutableListOf<Song>()
     private var currentPosition = 0
+    var channelId = ""
+    val notificationId = 1111111
     var enableRandom = false
+    @UnstableApi
+    var notificationManager: PlayerNotificationManager? = null
     override fun onBind(intent: Intent?): IBinder? {
         return mBinder
     }
@@ -40,8 +61,93 @@ class PlayService: Service() {
             .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
             .build()
         mediaPlayer.setAudioAttributes(audioAttributes, true)
+        createNotification()
         return super.onStartCommand(intent, flags, startId)
     }
+
+    @OptIn(UnstableApi::class)
+    fun createNotification(){
+        channelId = resources.getString(R.string.app_name) + " Music Channel "
+
+        notificationManager = PlayerNotificationManager.Builder(this, notificationId, channelId)
+            .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
+            .setSmallIconResourceId(R.drawable.baseline_play_arrow_24)
+            .setChannelDescriptionResourceId(R.string.app_name)
+            .setPreviousActionIconResourceId(R.drawable.baseline_fast_forward_24)
+            .setNextActionIconResourceId(R.drawable.baseline_fast_rewind_24)
+            .setPauseActionIconResourceId(R.drawable.baseline_pause_24)
+            .setPlayActionIconResourceId(R.drawable.baseline_play_arrow_24)
+            .setChannelNameResourceId(R.string.app_name)
+            .setMediaDescriptionAdapter(object : MediaDescriptionAdapter{
+                override fun getCurrentContentTitle(player: Player): CharSequence {
+                    return Objects.requireNonNull(mediaPlayer.currentMediaItem?.mediaMetadata?.title.toString())
+                }
+
+                override fun createCurrentContentIntent(player: Player): PendingIntent? {
+                    val openAppIntent = Intent(applicationContext, MainActivity::class.java)
+                    return PendingIntent.getActivity(applicationContext, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
+                }
+
+                override fun getCurrentContentText(player: Player): CharSequence? {
+                    return songsList[currentPosition].name
+                }
+
+                override fun getCurrentLargeIcon(
+                    player: Player,
+                    callback: PlayerNotificationManager.BitmapCallback
+                ): Bitmap? {
+                    val imageView: ImageView = ImageView(applicationContext)
+                    //imageView.setImageURI(Objects.requireNonNull(mediaPlayer.currentMediaItem?.mediaMetadata?.artworkUri))
+                    var bitmap =  imageView.drawable as BitmapDrawable?
+//                    if(bitmap == null)
+//                        bitmap = ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background) as BitmapDrawable
+
+                    return ContextCompat.getDrawable(applicationContext, R.drawable.ic_launcher_background)?.toBitmap()
+                }
+
+            })
+            .setNotificationListener(object : NotificationListener{
+                override fun onNotificationCancelled(
+                    notificationId: Int,
+                    dismissedByUser: Boolean
+                ) {
+                    super.onNotificationCancelled(notificationId, dismissedByUser)
+                    stopForeground(true)
+                    if(mediaPlayer.isPlaying)
+                        mediaPlayer.pause()
+                }
+
+                @SuppressLint("ForegroundServiceType")
+                override fun onNotificationPosted(
+                    notificationId: Int,
+                    notification: Notification,
+                    ongoing: Boolean
+                ) {
+                    super.onNotificationPosted(notificationId, notification, ongoing)
+                    startForeground(notificationId, notification)
+                }
+            })
+            .build()
+        notificationManager?.setPlayer(mediaPlayer)
+        notificationManager?.setPriority(NotificationCompat.PRIORITY_HIGH)
+        notificationManager?.setUseRewindAction(false)
+        notificationManager?.setUseFastForwardAction(false)
+        notificationManager?.setUsePreviousAction(true)
+        notificationManager?.setUseNextAction(true)
+
+    }
+
+    @UnstableApi
+    fun destroyService() {
+        if(mediaPlayer.isPlaying)
+            mediaPlayer.stop()
+        notificationManager?.setPlayer(null)
+        mediaPlayer.release()
+        stopForeground(false)
+        stopSelf()
+        super.onDestroy()
+    }
+
 
     fun create(songs: List<Song>, position: Int){
         songsList = songs.toMutableList()
@@ -54,6 +160,7 @@ class PlayService: Service() {
 
     fun play() {
         mediaPlayer.play()
+        stopForeground(true)
         mediaPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 when(playbackState){
@@ -74,6 +181,7 @@ class PlayService: Service() {
 
     fun pause() {
         mediaPlayer.pause()
+        stopForeground(false)
     }
 
     fun random(enabled: Boolean) {

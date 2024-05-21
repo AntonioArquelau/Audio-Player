@@ -74,7 +74,6 @@ class PlayActivity (): AppCompatActivity() {
             }
         }
 
-        binding.playerView.player = viewModel.getMediaPlayer()
         binding.nextButton.setOnClickListener{
            val song = viewModel.next()
             updateUI(song)

@@ -17,4 +17,5 @@ interface SongRepositoryInterface {
     fun isPlaying(): Boolean
     fun getMediaPlayer(): ExoPlayer?
     fun setCreateServiceListener(listener: () -> Unit)
+    fun destroyService()
 }

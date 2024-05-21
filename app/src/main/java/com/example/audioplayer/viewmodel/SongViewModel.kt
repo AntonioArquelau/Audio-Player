@@ -59,4 +59,8 @@ class SongViewModel @Inject constructor(
     fun setOnCreateServiceListener(listener: () -> Unit){
         songRepository.setCreateServiceListener(listener)
     }
+
+    fun destroyService() {
+        songRepository.destroyService()
+    }
 }

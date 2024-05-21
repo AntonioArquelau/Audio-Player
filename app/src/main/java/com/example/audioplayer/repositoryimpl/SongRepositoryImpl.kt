@@ -8,6 +8,8 @@ import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
@@ -105,6 +107,11 @@ class SongRepositoryImpl @Inject constructor (
 
     override fun setCreateServiceListener(listener: () -> Unit) {
         onCreateListener = listener
+    }
+
+    @OptIn(UnstableApi::class)
+    override fun destroyService() {
+        playService?.destroyService()
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
