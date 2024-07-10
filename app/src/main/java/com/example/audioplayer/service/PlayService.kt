@@ -73,10 +73,10 @@ class PlayService: Service() {
             .setChannelImportance(NotificationUtil.IMPORTANCE_HIGH)
             .setSmallIconResourceId(R.drawable.baseline_play_arrow_24)
             .setChannelDescriptionResourceId(R.string.app_name)
-            .setPreviousActionIconResourceId(R.drawable.baseline_fast_rewind_24)
+            .setPreviousActionIconResourceId(R.drawable.previous_icon)
             .setPauseActionIconResourceId(R.drawable.baseline_pause_24)
             .setPlayActionIconResourceId(R.drawable.baseline_play_arrow_24)
-            .setNextActionIconResourceId(R.drawable.baseline_play_arrow_24)
+            .setNextActionIconResourceId(R.drawable.next_icon)
             .setChannelNameResourceId(R.string.app_name)
             .setMediaDescriptionAdapter(object : MediaDescriptionAdapter{
                 override fun getCurrentContentTitle(player: Player): CharSequence {
@@ -129,8 +129,8 @@ class PlayService: Service() {
         notificationManager?.setPlayer(mediaPlayer)
         notificationManager?.setPriority(NotificationCompat.PRIORITY_HIGH)
         notificationManager?.setUseStopAction(false)
-        notificationManager?.setUseRewindAction(true)
-        notificationManager?.setUseFastForwardAction(true)
+        notificationManager?.setUseRewindAction(false)
+        notificationManager?.setUseFastForwardAction(false)
         notificationManager?.setUsePreviousAction(true)
         notificationManager?.setUseNextAction(true)
         notificationManager?.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);

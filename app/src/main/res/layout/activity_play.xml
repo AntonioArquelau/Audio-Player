@@ -117,7 +117,7 @@
             app:iconPadding="@dimen/no_dimen"
             app:iconTint="@color/white"
             app:backgroundTint="@color/transparent"
-            app:icon="@drawable/baseline_fast_rewind_24"/>
+            app:icon="@drawable/previous_icon"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/play_pause_button"
@@ -151,7 +151,7 @@
             app:iconPadding="@dimen/no_dimen"
             app:iconTint="@color/white"
             app:backgroundTint="@color/transparent"
-            app:icon="@drawable/baseline_fast_forward_24"/>
+            app:icon="@drawable/next_icon"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/repeat_toggle_button"
