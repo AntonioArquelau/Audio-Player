@@ -9,6 +9,7 @@ import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
 import androidx.annotation.OptIn
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.model.Song
@@ -71,33 +72,12 @@ class SongRepositoryImpl @Inject constructor (
         return playService?.repeat() == true
     }
 
-    override fun next(): Song {
-        if (position + 1 >= songsList.size)
-        {
-            position = 0
-        }
-        else{
-            position += 1
-        }
-        if (playService?.enableRandom == true){
-            position = (Math.random() * (songsList.size - 1)).toInt()
-        }
-        playService?.play(position)
-
-        return songsList[position]
+    override fun next() {
+        playService?.next()
     }
 
-    override fun previous(): Song {
-        if (position - 1 < 0)
-        {
-            position = songsList.size - 1
-        }
-        else{
-            position -= 1
-        }
-        playService?.play(position)
-
-        return songsList[position]
+    override fun previous() {
+        playService?.previous()
     }
 
     override fun isPlaying(): Boolean {
@@ -114,6 +94,14 @@ class SongRepositoryImpl @Inject constructor (
 
     override fun destroyService() {
         playService?.destroyService()
+    }
+
+    override fun getOnSongChangeLivedata(): MutableLiveData<Song>? {
+        return playService?.songUpdatedLiveData
+    }
+
+    override fun getCurrentSongId(): Int? {
+        return playService?.mediaPlayer?.currentMediaItemIndex
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

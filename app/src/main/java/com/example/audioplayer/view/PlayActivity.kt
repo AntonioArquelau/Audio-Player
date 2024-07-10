@@ -64,6 +64,7 @@ class PlayActivity (): AppCompatActivity() {
         })
 
         binding.playPauseButton.setOnClickListener{
+            Log.d("###", "### ${viewModel.isPlaying()}")
             if (viewModel.isPlaying()){
                 viewModel.pause()
                 binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_play_arrow_24, theme)
@@ -75,11 +76,13 @@ class PlayActivity (): AppCompatActivity() {
         }
 
         binding.nextButton.setOnClickListener{
-           val song = viewModel.next()
+            viewModel.next()
+            val song = viewModel.getSongList()[viewModel.getCurrentSongId()!!]
             updateUI(song)
         }
         binding.prevButton.setOnClickListener{
-           val song = viewModel.prev()
+            viewModel.prev()
+            val song = viewModel.getSongList()[viewModel.getCurrentSongId()!!]
             updateUI(song)
         }
 
@@ -110,14 +113,20 @@ class PlayActivity (): AppCompatActivity() {
             viewModel.getMediaPlayer()?.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     when(playbackState){
-                        Player.STATE_ENDED ->{
-                            val song = viewModel.next()
+                        Player.STATE_ENDED -> {
+                            viewModel.next()
+                        }
+                        Player.STATE_READY ->{
+                            val song = viewModel.getSongList()[viewModel.getCurrentSongId()!!]
                             updateUI(song)
                         }
                     }
                     super.onPlaybackStateChanged(playbackState)
                 }
             })
+        }
+        viewModel.getOnSongChangeLivedata()?.observe(this){song ->
+            updateUI(song)
         }
 
     }
@@ -129,7 +138,11 @@ class PlayActivity (): AppCompatActivity() {
         val songDuration: Long = song.duration?.toLong()!!
         val hms =formatString(songDuration)
         binding.durationTimeTextView.text = hms
-        binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
+        if(viewModel.isPlaying())
+            binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_pause_24, theme)
+        else{
+            binding.playPauseButton.icon = resources.getDrawable(R.drawable.baseline_play_arrow_24, theme)
+        }
         setupSeekBar(songDuration)
     }
 

@@ -3,6 +3,7 @@ package com.example.audioplayer.repositoryimpl
 import android.content.Intent
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.repository.SongRepositoryInterface
@@ -50,11 +51,11 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
         TODO("Not yet implemented")
     }
 
-    override fun next(): Song {
+    override fun next() {
         TODO("Not yet implemented")
     }
 
-    override fun previous(): Song {
+    override fun previous() {
         TODO("Not yet implemented")
     }
 
@@ -71,6 +72,14 @@ class FakeSongRepositoryImpl: SongRepositoryInterface {
     }
 
     override fun destroyService() {
+        TODO("Not yet implemented")
+    }
+
+    override fun getOnSongChangeLivedata(): MutableLiveData<Song>? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCurrentSongId(): Int? {
         TODO("Not yet implemented")
     }
 }

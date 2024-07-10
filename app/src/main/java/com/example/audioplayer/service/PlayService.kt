@@ -9,12 +9,14 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -38,9 +40,12 @@ class PlayService: Service() {
     }
     private var songsList = mutableListOf<Song>()
     private var currentPosition = 0
+    private var teste: Notification? = null
+    val songUpdatedLiveData = MutableLiveData<Song>()
     var channelId = ""
     val notificationId = 1111111
     var enableRandom = false
+
 
     var notificationManager: PlayerNotificationManager? = null
     override fun onBind(intent: Intent?): IBinder? {
@@ -80,7 +85,8 @@ class PlayService: Service() {
             .setChannelNameResourceId(R.string.app_name)
             .setMediaDescriptionAdapter(object : MediaDescriptionAdapter{
                 override fun getCurrentContentTitle(player: Player): CharSequence {
-                    return songsList[currentPosition].info.toString()
+                    songUpdatedLiveData.postValue(songsList[player.currentMediaItemIndex])
+                    return songsList[player.currentMediaItemIndex].info.toString()
                 }
 
                 override fun createCurrentContentIntent(player: Player): PendingIntent? {
@@ -89,7 +95,8 @@ class PlayService: Service() {
                 }
 
                 override fun getCurrentContentText(player: Player): CharSequence? {
-                    return songsList[currentPosition].name
+                    songUpdatedLiveData.postValue(songsList[player.currentMediaItemIndex])
+                    return songsList[player.currentMediaItemIndex].name
                 }
 
                 override fun getCurrentLargeIcon(
@@ -148,26 +155,24 @@ class PlayService: Service() {
 
     fun create(songs: List<Song>, position: Int){
         songsList = songs.toMutableList()
-        val uri = position.let { songsList[it].path?.toUri() }
-        val mediaItem = uri?.let { MediaItem.fromUri(it) }
-        mediaItem?.let { mediaPlayer.setMediaItem(it) }
+        val mediaItems = mutableListOf<MediaItem>()
+        songsList.forEach{
+            val uri = it.path?.toUri()
+            uri?.let { it1 -> MediaItem.fromUri(it1) }?.let { it2 -> mediaItems.add(it2) }
+        }
+        mediaPlayer.setMediaItems(mediaItems, position, 0L)
         mediaPlayer.prepare()
         play()
     }
 
     fun play() {
+        notificationManager?.setPlayer(mediaPlayer)
         mediaPlayer.play()
         mediaPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 when(playbackState){
                     Player.STATE_ENDED ->{
-                        if(enableRandom){
-                            currentPosition = (Math.random() * (songsList.size - 1)).toInt()
-                            play(currentPosition)
-                        }
-                        else {
-                            play(currentPosition + 1)
-                        }
+                        next()
                     }
                 }
                 super.onPlaybackStateChanged(playbackState)
@@ -195,14 +200,23 @@ class PlayService: Service() {
     }
 
     fun play(position: Int) {
-        mediaPlayer.stop()
-        notificationManager?.setPlayer(mediaPlayer)
-        val uri = position.let { songsList[it].path?.toUri() }
-        val mediaItem = uri?.let { MediaItem.fromUri(it) }
-        mediaItem?.let { mediaPlayer.setMediaItem(it) }
+        val mediaItems = mutableListOf<MediaItem>()
+        songsList.forEach{
+            val uri = it.path?.toUri()
+            uri?.let { it1 -> MediaItem.fromUri(it1) }?.let { it2 -> mediaItems.add(it2) }
+        }
+        mediaPlayer.setMediaItems(mediaItems, position, 0L)
         mediaPlayer.prepare()
         currentPosition = position
         play()
+    }
+
+    fun next(){
+        mediaPlayer.seekToNext()
+    }
+
+    fun previous(){
+        mediaPlayer.seekToPrevious()
     }
 
 }

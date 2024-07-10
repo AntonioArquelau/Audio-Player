@@ -2,6 +2,7 @@ package com.example.audioplayer.viewmodel
 
 import android.content.Intent
 import android.media.MediaPlayer
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.audioplayer.model.Song
@@ -36,12 +37,12 @@ class SongViewModel @Inject constructor(
         return songRepository.isPlaying()
     }
 
-    fun next() : Song{
-        return songRepository.next()
+    fun next(){
+        songRepository.next()
     }
 
-    fun prev() : Song{
-        return songRepository.previous()
+    fun prev(){
+        songRepository.previous()
     }
 
     fun toggleRepeat(): Boolean{
@@ -56,11 +57,23 @@ class SongViewModel @Inject constructor(
         return songRepository.getMediaPlayer()
     }
 
+    fun getService(): ExoPlayer? {
+        return songRepository.getMediaPlayer()
+    }
+
     fun setOnCreateServiceListener(listener: () -> Unit){
         songRepository.setCreateServiceListener(listener)
     }
 
     fun destroyService() {
         songRepository.destroyService()
+    }
+
+    fun getOnSongChangeLivedata(): MutableLiveData<Song>? {
+        return songRepository.getOnSongChangeLivedata()
+    }
+
+    fun getCurrentSongId(): Int? {
+        return songRepository.getCurrentSongId()
     }
 }
