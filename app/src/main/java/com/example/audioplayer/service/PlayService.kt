@@ -29,7 +29,6 @@ import com.example.audioplayer.R
 import com.example.audioplayer.extra.IntentString.Companion.INTENT_SONG_POSITION
 import com.example.audioplayer.model.Song
 import com.example.audioplayer.view.MainActivity
-import java.util.Objects
 
 class PlayService: Service() {
 
@@ -42,7 +41,7 @@ class PlayService: Service() {
     var channelId = ""
     val notificationId = 1111111
     var enableRandom = false
-    @UnstableApi
+
     var notificationManager: PlayerNotificationManager? = null
     override fun onBind(intent: Intent?): IBinder? {
         return mBinder
@@ -52,6 +51,7 @@ class PlayService: Service() {
         val service: PlayService
             get() = this@PlayService;
     }
+
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -65,22 +65,22 @@ class PlayService: Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    @OptIn(UnstableApi::class)
+
     fun createNotification(){
         channelId = resources.getString(R.string.app_name) + " Music Channel "
 
         notificationManager = PlayerNotificationManager.Builder(this, notificationId, channelId)
-            .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
+            .setChannelImportance(NotificationUtil.IMPORTANCE_HIGH)
             .setSmallIconResourceId(R.drawable.baseline_play_arrow_24)
             .setChannelDescriptionResourceId(R.string.app_name)
-            .setPreviousActionIconResourceId(R.drawable.baseline_fast_forward_24)
-            .setNextActionIconResourceId(R.drawable.baseline_fast_rewind_24)
+            .setPreviousActionIconResourceId(R.drawable.baseline_fast_rewind_24)
             .setPauseActionIconResourceId(R.drawable.baseline_pause_24)
             .setPlayActionIconResourceId(R.drawable.baseline_play_arrow_24)
+            .setNextActionIconResourceId(R.drawable.baseline_play_arrow_24)
             .setChannelNameResourceId(R.string.app_name)
             .setMediaDescriptionAdapter(object : MediaDescriptionAdapter{
                 override fun getCurrentContentTitle(player: Player): CharSequence {
-                    return Objects.requireNonNull(mediaPlayer.currentMediaItem?.mediaMetadata?.title.toString())
+                    return songsList[currentPosition].info.toString()
                 }
 
                 override fun createCurrentContentIntent(player: Player): PendingIntent? {
@@ -112,12 +112,10 @@ class PlayService: Service() {
                     dismissedByUser: Boolean
                 ) {
                     super.onNotificationCancelled(notificationId, dismissedByUser)
-                    stopForeground(true)
                     if(mediaPlayer.isPlaying)
                         mediaPlayer.pause()
                 }
 
-                @SuppressLint("ForegroundServiceType")
                 override fun onNotificationPosted(
                     notificationId: Int,
                     notification: Notification,
@@ -130,21 +128,20 @@ class PlayService: Service() {
             .build()
         notificationManager?.setPlayer(mediaPlayer)
         notificationManager?.setPriority(NotificationCompat.PRIORITY_HIGH)
-        notificationManager?.setUseRewindAction(false)
-        notificationManager?.setUseFastForwardAction(false)
+        notificationManager?.setUseStopAction(false)
+        notificationManager?.setUseRewindAction(true)
+        notificationManager?.setUseFastForwardAction(true)
         notificationManager?.setUsePreviousAction(true)
         notificationManager?.setUseNextAction(true)
+        notificationManager?.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
     }
 
-    @UnstableApi
     fun destroyService() {
         if(mediaPlayer.isPlaying)
             mediaPlayer.stop()
         notificationManager?.setPlayer(null)
-        mediaPlayer.release()
-        stopForeground(false)
-        stopSelf()
+        stopForeground(notificationId)
         super.onDestroy()
     }
 
@@ -160,7 +157,6 @@ class PlayService: Service() {
 
     fun play() {
         mediaPlayer.play()
-        stopForeground(true)
         mediaPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 when(playbackState){
@@ -181,7 +177,7 @@ class PlayService: Service() {
 
     fun pause() {
         mediaPlayer.pause()
-        stopForeground(false)
+        stopForeground(notificationId)
     }
 
     fun random(enabled: Boolean) {
@@ -200,6 +196,7 @@ class PlayService: Service() {
 
     fun play(position: Int) {
         mediaPlayer.stop()
+        notificationManager?.setPlayer(mediaPlayer)
         val uri = position.let { songsList[it].path?.toUri() }
         val mediaItem = uri?.let { MediaItem.fromUri(it) }
         mediaItem?.let { mediaPlayer.setMediaItem(it) }

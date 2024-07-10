@@ -20,13 +20,13 @@ class SongRepositoryImpl @Inject constructor (
     private val context: Context,
 ): SongRepositoryInterface, ServiceConnection {
 
-    private  val songsList = mutableListOf<Song>()
+    private val songsList = mutableListOf<Song>()
     private var playService: PlayService? = null
     private var position = 0
     private var onCreateListener: (() -> Unit?)? = null
     @SuppressLint("Range")
     override fun getSongsList(): List<Song> {
-
+        songsList.clear()
         val allSongsUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val selection = MediaStore.Audio.Media.IS_MUSIC+"!=0"
         val cursor = context.contentResolver.query(allSongsUri, null, selection, null, null)
@@ -46,10 +46,13 @@ class SongRepositoryImpl @Inject constructor (
     }
 
     override fun createService(position: Int, intent: Intent){
-        val serviceIntent = Intent(context, PlayService::class.java)
-        context.bindService(serviceIntent, this, BIND_AUTO_CREATE)
-        context.startService(serviceIntent)
+        if (playService == null) {
+            val serviceIntent = Intent(context, PlayService::class.java)
+            context.bindService(serviceIntent, this, BIND_AUTO_CREATE)
+            context.startService(serviceIntent)
+        }
         this.position = position
+        playService?.play(this.position)
     }
 
     override fun play() {
@@ -109,7 +112,6 @@ class SongRepositoryImpl @Inject constructor (
         onCreateListener = listener
     }
 
-    @OptIn(UnstableApi::class)
     override fun destroyService() {
         playService?.destroyService()
     }
@@ -122,7 +124,6 @@ class SongRepositoryImpl @Inject constructor (
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-        playService = null
     }
 }
 

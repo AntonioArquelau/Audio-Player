@@ -120,10 +120,8 @@ class PlayActivity (): AppCompatActivity() {
             })
         }
 
-
     }
 
-    @SuppressLint("DefaultLocale", "UseCompatLoadingForDrawables")
     private fun updateUI(song: Song){
         binding.songInfoTextview.text = song.info
         binding.songNameTextview.text = song.name
@@ -135,6 +133,7 @@ class PlayActivity (): AppCompatActivity() {
         setupSeekBar(songDuration)
     }
 
+    @SuppressLint("DefaultLocale")
     fun formatString(songDuration: Long): kotlin.String{
         return String.format(
             FORMATTER,
